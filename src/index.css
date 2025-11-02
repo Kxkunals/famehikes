@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import font (optional) */
+
+:root{
+  --bg-900: #0b0b0c;        /* deep black */
+  --bg-800: #0f0f10;
+  --gold-500: #D4AF37;      /* classic gold */
+  --gold-600: #b8891f;
+  --gold-400: #f0c86b;
+  --muted: #9aa0a6;
+}
+
+/* subtle moving gradient background */
+.body-bg {
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(212,175,55,0.06), transparent 8%),
+              radial-gradient(1000px 500px at 90% 90%, rgba(255,215,160,0.03), transparent 8%),
+              linear-gradient(180deg, var(--bg-900), var(--bg-800));
+  color: #eee;
+  font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* small shimmer animation for gold accents */
+@keyframes gold-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.gold-btn {
+  background-image: linear-gradient(90deg, var(--gold-500), var(--gold-400), var(--gold-600));
+  background-size: 200% 100%;
+  animation: gold-shimmer 4s linear infinite;
+  color: #0b0b0c;
+}
+
+/* glass card look */
+.glass-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.015));
+  border: 1px solid rgba(255,215,130,0.06);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+  backdrop-filter: blur(6px);
+  border-radius: 16px;
+}
+
+/* glowing border on hover */
+.card-hover:hover {
+  box-shadow: 0 12px 40px rgba(212,175,55,0.12), 0 2px 6px rgba(0,0,0,0.6);
+  transform: translateY(-6px);
+  transition: all .35s cubic-bezier(.2,.9,.3,1);
+}
+
+/* thin gold underline for headings */
+.gold-underline {
+  display: inline-block;
+  position: relative;
+}
+.gold-underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 36%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold-500), var(--gold-400));
+  border-radius: 4px;
+  opacity: 0.95;
+}
+
+/* responsive padding for main content */
+.main-wrap { padding-top: 84px; padding-bottom: 48px; }
+
+/* small helper */
+.muted { color: var(--muted); }
+
