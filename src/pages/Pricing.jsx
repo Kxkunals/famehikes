@@ -17,7 +17,7 @@ const Pricing = () => {
 
   const handleOrder = async () => {
     try {
-      const response = await axios.post("http://localhost:5000/api/order", {
+      const response = await axios.post("https://famehikes-backend.onrender.com", {
         service: selectedService.serviceId,
         link,
         quantity,
