@@ -2,14 +2,16 @@ import express from "express";
 
 const router = express.Router();
 
-router.post("/verify", async (req, res) => {
+// POST /api/payment/verify
+router.post("/payment/verify", async (req, res) => {
   try {
-    // add your payment verification logic here
-    res.status(200).json({ success: true });
+    // 🔹 Add your payment verification logic here (e.g., Razorpay signature check)
+    res.status(200).json({ success: true, message: "Payment verified successfully ✅" });
   } catch (error) {
     console.error("Payment verification error:", error);
-    res.status(500).json({ success: false });
+    res.status(500).json({ success: false, message: "Payment verification failed ❌" });
   }
 });
 
 export default router;
+

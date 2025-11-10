@@ -17,7 +17,7 @@ const Pricing = () => {
 
   const handleOrder = async () => {
     try {
-      const response = await axios.post("https://famehikes-backend.onrender.com", {
+      const response = await axios.post("https://famehikes-backend.onrender.com/api/order", {
         service: selectedService.serviceId,
         link,
         quantity,
