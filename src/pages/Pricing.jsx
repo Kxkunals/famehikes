@@ -15,41 +15,59 @@ const Pricing = () => {
     { id: 4, name: "YouTube Likes", price: 120, serviceId: 3002 },
   ];
 
- const handleOrder = async () => {
-  try {
-    if (!selectedService || !quantity) {
-      setMessage("⚠️ Please select a service and enter quantity.");
-      return;
+  const handleOrder = async () => {
+    try {
+      if (!selectedService || !quantity) {
+        setMessage("⚠️ Please select a service and enter quantity.");
+        return;
+      }
+
+      // Calculate amount
+      const amount = selectedService.price * (quantity / 1000);
+
+      // 1️⃣ Create order on backend
+      const response = await axios.post(
+        "https://famehikes-backend.onrender.com/api/order",
+        { amount, service: selectedService.name, link, quantity }
+      );
+
+      if (!response.data.success) {
+        setMessage("❌ Something went wrong while creating the order.");
+        return;
+      }
+
+      const { orderId, currency } = response.data;
+
+      // 2️⃣ Open Razorpay payment modal
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // Razorpay key from .env
+        amount: amount * 100, // amount in paise
+        currency: currency,
+        name: "FameHikes",
+        description: selectedService.name,
+        order_id: orderId,
+        handler: function (res) {
+          setMessage(`✅ Payment successful! Payment ID: ${res.razorpay_payment_id}`);
+          console.log("Payment success:", res);
+        },
+        theme: { color: "#FFD700" },
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.error("Error placing order:", error);
+      setMessage("⚠️ Server error. Try again later.");
+    } finally {
+      setConfirmation(false);
+      setSelectedService(null);
     }
-
-    // Calculate the total price based on selected service
-    const amount = selectedService.price * (quantity / 1000);
-
-    console.log("Creating order with amount:", amount);
-
-    const response = await axios.post(
-      "https://famehikes-backend.onrender.com/api/order",
-      { amount }
-    );
-
-    console.log("Order response:", response.data);
-
-    if (response.data.success) {
-      setMessage(`✅ Order created successfully! Order ID: ${response.data.orderId}`);
-    } else {
-      setMessage("❌ Something went wrong while creating the order.");
-    }
-  } catch (error) {
-    console.error("Error placing order:", error);
-    setMessage("⚠️ Server error. Try again later.");
-  } finally {
-    setConfirmation(false);
-  }
-};
+  };
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center py-10 px-4">
       <h1 className="text-4xl font-bold mb-6 text-yellow-500">Pricing</h1>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {services.map((service) => (
           <div
@@ -71,9 +89,7 @@ const Pricing = () => {
       {selectedService && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center">
           <div className="bg-[#111] border border-yellow-500 rounded-xl p-8 w-96 text-center">
-            <h2 className="text-2xl font-bold text-yellow-400 mb-4">
-              {selectedService.name}
-            </h2>
+            <h2 className="text-2xl font-bold text-yellow-400 mb-4">{selectedService.name}</h2>
             <input
               type="text"
               placeholder="Enter your post/profile link"
