@@ -53,3 +53,4 @@ app.post("/api/order", async (req, res) => {
 
 const PORT = 5000;
 app.listen(PORT, () => console.log(`✅ AirSMM Proxy running on port ${PORT}`));
+export default router;
