@@ -15,26 +15,37 @@ const Pricing = () => {
     { id: 4, name: "YouTube Likes", price: 120, serviceId: 3002 },
   ];
 
-  const handleOrder = async () => {
-    try {
-      const response = await axios.post("https://famehikes-backend.onrender.com/api/order", {
-        service: selectedService.serviceId,
-        link,
-        quantity,
-      });
-
-      if (response.data.order) {
-        setMessage(`✅ Order placed successfully! Order ID: ${response.data.order}`);
-      } else {
-        setMessage("❌ Something went wrong. Please try again.");
-      }
-    } catch (error) {
-      console.error(error);
-      setMessage("⚠️ Server error. Try again later.");
-    } finally {
-      setConfirmation(false);
+ const handleOrder = async () => {
+  try {
+    if (!selectedService || !quantity) {
+      setMessage("⚠️ Please select a service and enter quantity.");
+      return;
     }
-  };
+
+    // Calculate the total price based on selected service
+    const amount = selectedService.price * (quantity / 1000);
+
+    console.log("Creating order with amount:", amount);
+
+    const response = await axios.post(
+      "https://famehikes-backend.onrender.com/api/order",
+      { amount }
+    );
+
+    console.log("Order response:", response.data);
+
+    if (response.data.success) {
+      setMessage(`✅ Order created successfully! Order ID: ${response.data.orderId}`);
+    } else {
+      setMessage("❌ Something went wrong while creating the order.");
+    }
+  } catch (error) {
+    console.error("Error placing order:", error);
+    setMessage("⚠️ Server error. Try again later.");
+  } finally {
+    setConfirmation(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center py-10 px-4">
