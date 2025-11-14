@@ -18,8 +18,8 @@ const Pricing = () => {
   ];
 
   const handleOrder = async () => {
-    if (!selectedService || !quantity) {
-      setMessage("⚠️ Please select a service and enter quantity.");
+    if (!selectedService || !quantity || !link) {
+      setMessage("⚠️ Please fill all fields: link and quantity are required.");
       return;
     }
 
@@ -39,6 +39,15 @@ const Pricing = () => {
         return;
       }
 
+      // Store order details for verification
+      const orderDetails = {
+        serviceId: selectedService.serviceId,
+        serviceName: selectedService.name,
+        link: link,
+        quantity: quantity,
+        amount: amount
+      };
+
       // Razorpay options
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID, // frontend public key
@@ -47,20 +56,72 @@ const Pricing = () => {
         name: "FameHikes",
         description: selectedService.name,
         order_id: response.data.orderId,
-        handler: function (res) {
-          setMessage(
-            `✅ Payment successful! Payment ID: ${res.razorpay_payment_id}`
-          );
-          setConfirmation(false);
-          setSelectedService(null); // close modal
+        handler: async function (razorpayResponse) {
+          // Payment successful - now verify and deliver service
+          setMessage("🔄 Verifying payment and delivering service...");
+          
+          try {
+            // Send payment details to backend for verification
+            const verifyResponse = await axios.post(
+              "https://famehikes-backend.onrender.com/api/payment/verify",
+              {
+                razorpay_order_id: razorpayResponse.razorpay_order_id,
+                razorpay_payment_id: razorpayResponse.razorpay_payment_id,
+                razorpay_signature: razorpayResponse.razorpay_signature,
+                link: orderDetails.link,
+                quantity: orderDetails.quantity,
+                serviceId: orderDetails.serviceId,
+                serviceName: orderDetails.serviceName
+              }
+            );
+
+            console.log("Payment verification response:", verifyResponse.data);
+
+            if (verifyResponse.data.success) {
+              // Payment verified and service delivered
+              setMessage(
+                `✅ ${verifyResponse.data.message}\nPayment ID: ${razorpayResponse.razorpay_payment_id}`
+              );
+            } else {
+              // Payment verification failed
+              setMessage(
+                `❌ ${verifyResponse.data.message || "Payment verification failed"}`
+              );
+            }
+          } catch (verifyError) {
+            console.error("Payment verification error:", verifyError);
+            setMessage(
+              `⚠️ Payment received but verification failed. Please contact support with Payment ID: ${razorpayResponse.razorpay_payment_id}`
+            );
+          }
+
+          // Reset form after 3 seconds
+          setTimeout(() => {
+            setConfirmation(false);
+            setSelectedService(null);
+            setLink("");
+            setQuantity("");
+            setMessage("");
+          }, 3000);
+        },
+        modal: {
+          ondismiss: function() {
+            setMessage("⚠️ Payment cancelled by user.");
+          }
         },
         prefill: {
           // Optional: you can prefill email/name if you want
         },
-        theme: { color: "#FFD700" },
+        theme: { color: "#FF6B35" }, // Orange theme to match your design
       };
 
       const rzp = new window.Razorpay(options);
+      rzp.on("payment.failed", function (response) {
+        setMessage(
+          `❌ Payment failed. Error: ${response.error.description || "Unknown error"}`
+        );
+      });
+      
       rzp.open();
 
     } catch (error) {
