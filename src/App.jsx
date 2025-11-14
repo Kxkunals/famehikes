@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { FaWhatsapp } from "react-icons/fa";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
@@ -33,6 +34,22 @@ export default function App(){
         </AnimatePresence>
       </div>
       <Footer />
+      
+      {/* WhatsApp Floating Button */}
+      <motion.a
+        href="https://wa.me/917055961246"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:bg-[#20BA5A] transition-colors"
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        animate={{ y: [0, -10, 0] }}
+        transition={{ 
+          y: { duration: 2, repeat: Infinity, ease: "easeInOut" }
+        }}
+      >
+        <FaWhatsapp className="text-3xl" />
+      </motion.a>
     </div>
   );
 }
