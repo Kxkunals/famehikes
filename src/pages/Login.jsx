@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { FaGoogle } from "react-icons/fa";
+import { getFirebaseErrorMessage } from "../utils/errorMessages";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -22,10 +23,12 @@ const Login = () => {
       if (result.success) {
         navigate("/");
       } else {
-        setError(result.error || "Failed to login");
+        const friendlyError = getFirebaseErrorMessage(null, result.error);
+        setError(friendlyError);
       }
     } catch (err) {
-      setError("Failed to login. Please try again.");
+      const friendlyError = getFirebaseErrorMessage(null, err.message);
+      setError(friendlyError);
     } finally {
       setLoading(false);
     }
@@ -40,10 +43,12 @@ const Login = () => {
       if (result.success) {
         navigate("/");
       } else {
-        setError(result.error || "Failed to login with Google");
+        const friendlyError = getFirebaseErrorMessage(null, result.error);
+        setError(friendlyError);
       }
     } catch (err) {
-      setError("Failed to login with Google. Please try again.");
+      const friendlyError = getFirebaseErrorMessage(null, err.message);
+      setError(friendlyError);
     } finally {
       setLoading(false);
     }

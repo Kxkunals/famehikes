@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { FaGoogle } from "react-icons/fa";
+import { getFirebaseErrorMessage } from "../utils/errorMessages";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
@@ -34,10 +35,12 @@ const Signup = () => {
       if (result.success) {
         navigate("/");
       } else {
-        setError(result.error || "Failed to create account");
+        const friendlyError = getFirebaseErrorMessage(null, result.error);
+        setError(friendlyError);
       }
     } catch (err) {
-      setError("Failed to create account. Please try again.");
+      const friendlyError = getFirebaseErrorMessage(null, err.message);
+      setError(friendlyError);
     } finally {
       setLoading(false);
     }
@@ -52,10 +55,12 @@ const Signup = () => {
       if (result.success) {
         navigate("/");
       } else {
-        setError(result.error || "Failed to sign up with Google");
+        const friendlyError = getFirebaseErrorMessage(null, result.error);
+        setError(friendlyError);
       }
     } catch (err) {
-      setError("Failed to sign up with Google. Please try again.");
+      const friendlyError = getFirebaseErrorMessage(null, err.message);
+      setError(friendlyError);
     } finally {
       setLoading(false);
     }
