@@ -1,9 +1,17 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Link as ScrollLink } from "react-scroll";
+import { useNavigate } from "react-router-dom";
 import { FaInstagram, FaYoutube, FaTiktok, FaFacebook, FaTwitter } from "react-icons/fa";
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  const handleServiceClick = (serviceName) => {
+    // Navigate to services page
+    navigate("/services");
+  };
+
   return (
     <div className="bg-[#fafafa] text-black min-h-screen font-poppins">
       {/* HERO SECTION */}
@@ -301,8 +309,9 @@ const Home = () => {
             ].map((service, index) => (
               <motion.div
                 key={index}
-                className="bg-white border border-orange-400/30 rounded-2xl p-6 shadow-lg hover:shadow-orange-500/20 transition-all duration-300"
+                className="bg-white border border-orange-400/30 rounded-2xl p-6 shadow-lg hover:shadow-orange-500/20 transition-all duration-300 cursor-pointer"
                 whileHover={{ scale: 1.05 }}
+                onClick={() => handleServiceClick(service.title)}
               >
                 <div className="text-4xl text-orange-500 mb-4 flex justify-center">
                   {service.icon}
