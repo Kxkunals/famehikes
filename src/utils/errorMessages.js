@@ -49,8 +49,8 @@ export const getFirebaseErrorMessage = (errorCode, errorMessage) => {
     
     case "auth/unauthorized-domain":
     case "unauthorized-domain":
-      // Get current domain dynamically
-      const currentDomain = window.location.hostname;
+      // Get current domain dynamically (safely)
+      const currentDomain = typeof window !== 'undefined' ? window.location.hostname : 'your-domain.com';
       return `This domain (${currentDomain}) is not authorized for OAuth. Please add it to Firebase Console → Authentication → Settings → Authorized domains. Current domain: ${currentDomain}`;
     
     case "auth/operation-not-allowed":

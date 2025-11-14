@@ -20,8 +20,12 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Analytics (only in browser)
 let analytics = null;
-if (typeof window !== 'undefined') {
-  analytics = getAnalytics(app);
+try {
+  if (typeof window !== 'undefined' && window.location.hostname !== 'localhost') {
+    analytics = getAnalytics(app);
+  }
+} catch (error) {
+  console.warn("Analytics initialization failed:", error);
 }
 
 // Initialize Auth

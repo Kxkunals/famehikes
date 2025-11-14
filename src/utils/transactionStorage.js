@@ -2,6 +2,12 @@
 
 export const saveTransaction = (transactionData) => {
   try {
+    // Check if localStorage is available
+    if (typeof window === 'undefined' || !window.localStorage) {
+      console.warn("localStorage is not available");
+      return null;
+    }
+
     // Get existing transactions
     const existingTransactions = getTransactions();
     
@@ -34,6 +40,11 @@ export const saveTransaction = (transactionData) => {
 
 export const getTransactions = () => {
   try {
+    // Check if localStorage is available
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return [];
+    }
+    
     const transactions = localStorage.getItem('famehikes_transactions');
     return transactions ? JSON.parse(transactions) : [];
   } catch (error) {
@@ -44,6 +55,11 @@ export const getTransactions = () => {
 
 export const clearTransactions = () => {
   try {
+    // Check if localStorage is available
+    if (typeof window === 'undefined' || !window.localStorage) {
+      return false;
+    }
+    
     localStorage.removeItem('famehikes_transactions');
     return true;
   } catch (error) {
