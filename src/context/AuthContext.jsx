@@ -49,10 +49,22 @@ export const AuthProvider = ({ children }) => {
   const loginWithGoogle = async () => {
     try {
       const provider = new GoogleAuthProvider();
+      // Add additional scopes if needed
+      provider.addScope('profile');
+      provider.addScope('email');
+      // Set custom parameters
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+      
       const userCredential = await signInWithPopup(auth, provider);
+      console.log("Google sign-in successful:", userCredential.user);
       return { success: true, user: userCredential.user };
     } catch (error) {
-      return { success: false, error: error.message };
+      console.error("Google sign-in error:", error);
+      console.error("Error code:", error.code);
+      console.error("Error message:", error.message);
+      return { success: false, error: error.message, code: error.code };
     }
   };
 

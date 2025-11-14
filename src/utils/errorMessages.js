@@ -33,17 +33,42 @@ export const getFirebaseErrorMessage = (errorCode, errorMessage) => {
       return "Google sign-in was cancelled. Please try again.";
     
     case "popup-blocked":
-      return "Popup was blocked. Please allow popups and try again.";
+      return "Popup was blocked. Please allow popups for this site and try again.";
+    
+    case "auth/popup-blocked":
+      return "Popup was blocked by your browser. Please allow popups and try again.";
+    
+    case "auth/cancelled-popup-request":
+      return "Another sign-in attempt is in progress. Please wait and try again.";
+    
+    case "auth/account-exists-with-different-credential":
+      return "An account already exists with this email. Please use email/password login.";
     
     case "network-request-failed":
-      return "Network error. Please check your internet connection.";
+      return "Network error. Please check your internet connection and try again.";
+    
+    case "auth/unauthorized-domain":
+      return "This domain is not authorized. Please contact support.";
+    
+    case "auth/operation-not-allowed":
+      // Check if it's for Google specifically
+      if (errorMessage?.toLowerCase().includes("google") || errorMessage?.toLowerCase().includes("sign-in")) {
+        return "Google Sign-In is not enabled in Firebase Console. Please enable it in Authentication → Sign-in method → Google.";
+      }
+      return "Email/Password authentication is not enabled. Please contact support or use Google Sign In.";
     
     default:
       // Return a more user-friendly message for unknown errors
       if (errorMessage?.includes("Firebase:")) {
-        return "Authentication error. Please try again or contact support.";
+        // Try to extract more info
+        if (errorMessage?.toLowerCase().includes("google")) {
+          return "Google Sign-In error. Please make sure Google authentication is enabled in Firebase Console.";
+        }
+        return "Authentication error. Please check Firebase Console settings or contact support.";
       }
-      return errorMessage || "An error occurred. Please try again.";
+      // Log the original error for debugging
+      console.error("Unhandled error:", errorMessage);
+      return errorMessage || "An error occurred. Please try again or contact support.";
   }
 };
 

@@ -55,11 +55,16 @@ const Signup = () => {
       if (result.success) {
         navigate("/");
       } else {
-        const friendlyError = getFirebaseErrorMessage(null, result.error);
+        // Log the error for debugging
+        console.error("Google signup error:", result.error);
+        console.error("Error code:", result.code);
+        
+        const friendlyError = getFirebaseErrorMessage(result.code, result.error);
         setError(friendlyError);
       }
     } catch (err) {
-      const friendlyError = getFirebaseErrorMessage(null, err.message);
+      console.error("Google signup exception:", err);
+      const friendlyError = getFirebaseErrorMessage(err.code, err.message);
       setError(friendlyError);
     } finally {
       setLoading(false);
