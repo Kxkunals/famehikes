@@ -32,23 +32,24 @@ export const getFirebaseErrorMessage = (errorCode, errorMessage) => {
     case "popup-closed-by-user":
       return "Google sign-in was cancelled. Please try again.";
     
-    case "popup-blocked":
-      return "Popup was blocked. Please allow popups for this site and try again.";
-    
     case "auth/popup-blocked":
+    case "popup-blocked":
       return "Popup was blocked by your browser. Please allow popups and try again.";
     
     case "auth/cancelled-popup-request":
+    case "cancelled-popup-request":
       return "Another sign-in attempt is in progress. Please wait and try again.";
     
     case "auth/account-exists-with-different-credential":
+    case "account-exists-with-different-credential":
       return "An account already exists with this email. Please use email/password login.";
     
     case "network-request-failed":
       return "Network error. Please check your internet connection and try again.";
     
     case "auth/unauthorized-domain":
-      return "This domain is not authorized. Please contact support.";
+    case "unauthorized-domain":
+      return "This domain (www.famehikes.in) is not authorized for OAuth. Please add it to Firebase Console → Authentication → Settings → Authorized domains. Or contact support to add your domain.";
     
     case "auth/operation-not-allowed":
       // Check if it's for Google specifically
