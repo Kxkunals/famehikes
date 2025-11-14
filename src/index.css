@@ -7,53 +7,54 @@
 /* Import font (optional) */
 
 :root{
-  --bg-900: #0b0b0c;        /* deep black */
-  --bg-800: #0f0f10;
-  --gold-500: #D4AF37;      /* classic gold */
-  --gold-600: #b8891f;
-  --gold-400: #f0c86b;
-  --muted: #9aa0a6;
+  --bg-900: #fafafa;        /* light off-white */
+  --bg-800: #f5f5f5;
+  --orange-500: #FF6B35;      /* primary orange */
+  --orange-600: #E85A2B;
+  --orange-400: #FF8C5A;
+  --muted: #666666;
+  --nav-color: #FFB6A3;      /* light pink/orange for nav links */
 }
 
 /* subtle moving gradient background */
 .body-bg {
-  background: radial-gradient(1200px 600px at 10% 10%, rgba(212,175,55,0.06), transparent 8%),
-              radial-gradient(1000px 500px at 90% 90%, rgba(255,215,160,0.03), transparent 8%),
+  background: radial-gradient(1200px 600px at 10% 10%, rgba(255,107,53,0.06), transparent 8%),
+              radial-gradient(1000px 500px at 90% 90%, rgba(255,140,90,0.03), transparent 8%),
               linear-gradient(180deg, var(--bg-900), var(--bg-800));
-  color: #eee;
+  color: #1a1a1a;
   font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
 }
 
-/* small shimmer animation for gold accents */
-@keyframes gold-shimmer {
+/* small shimmer animation for orange accents */
+@keyframes orange-shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
 }
 
 .gold-btn {
-  background-image: linear-gradient(90deg, var(--gold-500), var(--gold-400), var(--gold-600));
+  background-image: linear-gradient(90deg, var(--orange-500), var(--orange-400), var(--orange-600));
   background-size: 200% 100%;
-  animation: gold-shimmer 4s linear infinite;
-  color: #0b0b0c;
+  animation: orange-shimmer 4s linear infinite;
+  color: #ffffff;
 }
 
 /* glass card look */
 .glass-card {
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.015));
-  border: 1px solid rgba(255,215,130,0.06);
-  box-shadow: 0 6px 24px rgba(0,0,0,0.6);
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.9));
+  border: 1px solid rgba(255,107,53,0.2);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.1);
   backdrop-filter: blur(6px);
   border-radius: 16px;
 }
 
 /* glowing border on hover */
 .card-hover:hover {
-  box-shadow: 0 12px 40px rgba(212,175,55,0.12), 0 2px 6px rgba(0,0,0,0.6);
+  box-shadow: 0 12px 40px rgba(255,107,53,0.15), 0 2px 6px rgba(0,0,0,0.1);
   transform: translateY(-6px);
   transition: all .35s cubic-bezier(.2,.9,.3,1);
 }
 
-/* thin gold underline for headings */
+/* thin orange underline for headings */
 .gold-underline {
   display: inline-block;
   position: relative;
@@ -65,7 +66,7 @@
   bottom: -6px;
   width: 36%;
   height: 4px;
-  background: linear-gradient(90deg, var(--gold-500), var(--gold-400));
+  background: linear-gradient(90deg, var(--orange-500), var(--orange-400));
   border-radius: 4px;
   opacity: 0.95;
 }

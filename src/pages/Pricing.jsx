@@ -68,20 +68,20 @@ const Pricing = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center py-10 px-4">
-      <h1 className="text-4xl font-bold mb-6 text-yellow-500">Pricing</h1>
+    <div className="min-h-screen bg-[#fafafa] text-black flex flex-col items-center justify-center py-10 px-4">
+      <h1 className="text-4xl font-bold mb-6 text-orange-500">Pricing</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {services.map((service) => (
           <div
             key={service.id}
-            className="bg-[#111] border border-yellow-500 rounded-xl p-6 shadow-lg hover:scale-105 transition-transform cursor-pointer"
+            className="bg-white border border-orange-500 rounded-xl p-6 shadow-lg hover:scale-105 transition-transform cursor-pointer"
           >
-            <h2 className="text-2xl font-semibold mb-2 text-yellow-400">{service.name}</h2>
-            <p className="text-gray-300 mb-4">₹{service.price} per 1000 units</p>
+            <h2 className="text-2xl font-semibold mb-2 text-orange-500">{service.name}</h2>
+            <p className="text-gray-600 mb-4">₹{service.price} per 1000 units</p>
             <button
               onClick={() => setSelectedService(service)}
-              className="bg-yellow-500 text-black font-semibold py-2 px-6 rounded hover:bg-yellow-400"
+              className="bg-orange-500 text-white font-semibold py-2 px-6 rounded hover:bg-orange-600"
             >
               Order Now
             </button>
@@ -91,8 +91,8 @@ const Pricing = () => {
 
       {selectedService && (
         <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center">
-          <div className="bg-[#111] border border-yellow-500 rounded-xl p-8 w-96 text-center">
-            <h2 className="text-2xl font-bold text-yellow-400 mb-4">
+          <div className="bg-white border border-orange-500 rounded-xl p-8 w-96 text-center">
+            <h2 className="text-2xl font-bold text-orange-500 mb-4">
               {selectedService.name}
             </h2>
             <input
@@ -100,14 +100,14 @@ const Pricing = () => {
               placeholder="Enter your post/profile link"
               value={link}
               onChange={(e) => setLink(e.target.value)}
-              className="w-full p-2 mb-3 bg-black border border-yellow-500 rounded text-white"
+              className="w-full p-2 mb-3 bg-white border border-orange-500 rounded text-black"
             />
             <input
               type="number"
               placeholder="Enter quantity"
               value={quantity}
               onChange={(e) => setQuantity(e.target.value)}
-              className="w-full p-2 mb-4 bg-black border border-yellow-500 rounded text-white"
+              className="w-full p-2 mb-4 bg-white border border-orange-500 rounded text-black"
             />
             <label className="flex items-center justify-center mb-4">
               <input
@@ -123,8 +123,8 @@ const Pricing = () => {
                 disabled={!confirmation}
                 onClick={handleOrder}
                 className={`${
-                  confirmation ? "bg-yellow-500 hover:bg-yellow-400" : "bg-gray-600 cursor-not-allowed"
-                } text-black font-semibold py-2 px-6 rounded`}
+                  confirmation ? "bg-orange-500 hover:bg-orange-600" : "bg-gray-400 cursor-not-allowed"
+                } text-white font-semibold py-2 px-6 rounded`}
               >
                 Place Order
               </button>
@@ -140,7 +140,7 @@ const Pricing = () => {
       )}
 
       {message && (
-        <div className="mt-8 text-center text-yellow-400 font-medium">{message}</div>
+        <div className="mt-8 text-center text-orange-500 font-medium">{message}</div>
       )}
     </div>
   );

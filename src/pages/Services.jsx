@@ -37,13 +37,13 @@ const Services = () => {
   ];
 
   return (
-    <section className="py-24 bg-black text-white" id="services">
+    <section className="py-24 bg-[#fafafa] text-black" id="services">
       <div className="container mx-auto text-center px-6">
         <motion.h2
           initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-4xl md:text-5xl font-bold text-yellow-400 mb-12"
+          className="text-4xl md:text-5xl font-bold text-orange-500 mb-12"
         >
           Our Services
         </motion.h2>
@@ -56,12 +56,12 @@ const Services = () => {
               whileInView={{ opacity: 1, y: 0 }}
               whileHover={{ scale: 1.05, boxShadow: "0 0 25px rgba(255,215,0,0.5)" }}
               transition={{ duration: 0.3 }}
-              className="bg-black border border-yellow-500 rounded-2xl p-8 hover:bg-yellow-500/10 transition-all"
+              className="bg-white border border-orange-500 rounded-2xl p-8 hover:bg-orange-500/10 transition-all"
             >
               <div className="flex flex-col items-center">
                 {service.icon}
-                <h3 className="text-2xl font-semibold text-yellow-400 mb-2">{service.title}</h3>
-                <p className="text-gray-300 text-sm">{service.description}</p>
+                <h3 className="text-2xl font-semibold text-orange-500 mb-2">{service.title}</h3>
+                <p className="text-gray-600 text-sm">{service.description}</p>
               </div>
             </motion.div>
           ))}

@@ -11,7 +11,7 @@ import Contact from "./pages/Contact";
 
 export default function App(){
   return (
-    <div className="body-bg min-h-screen text-white">
+    <div className="body-bg min-h-screen text-black">
       <Navbar />
       <div className="main-wrap max-w-7xl mx-auto px-4">
         <AnimatePresence mode="wait" initial={false}>
