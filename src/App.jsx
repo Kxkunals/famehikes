@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -10,10 +10,13 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 
 export default function App(){
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
   return (
-    <div className="body-bg min-h-screen text-white">
-      <Navbar />
-      <div className="main-wrap max-w-7xl mx-auto px-4">
+    <div className={isHomePage ? "min-h-screen" : "body-bg min-h-screen text-white"}>
+      {!isHomePage && <Navbar />}
+      <div className={isHomePage ? "" : "main-wrap max-w-7xl mx-auto px-4"}>
         <AnimatePresence mode="wait" initial={false}>
           <motion.main
             key={location.pathname}
@@ -32,7 +35,7 @@ export default function App(){
           </motion.main>
         </AnimatePresence>
       </div>
-      <Footer />
+      {!isHomePage && <Footer />}
     </div>
   );
 }
