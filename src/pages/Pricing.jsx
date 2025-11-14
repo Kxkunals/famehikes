@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FaInstagram, FaYoutube, FaChartLine, FaRocket, FaStar, FaUsers } from "react-icons/fa";
 import axios from "axios";
+import { saveTransaction } from "../utils/transactionStorage";
 
 const Pricing = () => {
   const [selectedService, setSelectedService] = useState(null);
@@ -79,6 +80,19 @@ const Pricing = () => {
 
             if (verifyResponse.data.success) {
               // Payment verified and service delivered
+              // Save transaction to history
+              saveTransaction({
+                serviceName: orderDetails.serviceName,
+                serviceId: orderDetails.serviceId,
+                quantity: orderDetails.quantity,
+                amount: orderDetails.amount,
+                link: orderDetails.link,
+                paymentId: razorpayResponse.razorpay_payment_id,
+                orderId: razorpayResponse.razorpay_order_id,
+                smmOrderId: verifyResponse.data.smmOrderId || null,
+                status: 'success'
+              });
+              
               setMessage(
                 `✅ ${verifyResponse.data.message}\nPayment ID: ${razorpayResponse.razorpay_payment_id}`
               );

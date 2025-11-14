@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FiMenu, FiX } from "react-icons/fi";
-import { FaInstagram, FaYoutube, FaTwitter, FaFacebook, FaUser, FaSignOutAlt } from "react-icons/fa";
+import { FaInstagram, FaYoutube, FaTwitter, FaFacebook, FaUser, FaSignOutAlt, FaReceipt } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
@@ -47,6 +47,13 @@ export default function Navbar() {
           
           {currentUser ? (
             <div className="ml-4 flex items-center gap-3">
+              <Link 
+                to="/transactions" 
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 hover:bg-orange-200 text-orange-600 text-sm font-semibold transition-colors"
+              >
+                <FaReceipt />
+                <span className="hidden lg:inline">Transactions</span>
+              </Link>
               <div className="flex items-center gap-2 text-sm text-black">
                 <FaUser className="text-orange-500" />
                 <span className="hidden lg:inline">{currentUser.email?.split('@')[0]}</span>
@@ -88,6 +95,14 @@ export default function Navbar() {
             <Link to="/contact" onClick={() => setOpen(false)} className="text-black">Contact</Link>
             {currentUser ? (
               <>
+                <Link 
+                  to="/transactions" 
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-orange-100 hover:bg-orange-200 text-orange-600 text-sm font-semibold transition-colors"
+                >
+                  <FaReceipt />
+                  Transactions
+                </Link>
                 <div className="flex items-center gap-2 text-black pt-2 border-t border-gray-200">
                   <FaUser className="text-orange-500" />
                   <span className="text-sm">{currentUser.email?.split('@')[0]}</span>
