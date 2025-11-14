@@ -249,7 +249,7 @@ const Pricing = () => {
 
       {/* Main Content */}
       <motion.h1
-        className="text-4xl font-bold mb-6 text-orange-500 relative z-10"
+        className="text-4xl font-bold mb-6 text-orange-500 relative z-0"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
@@ -257,7 +257,7 @@ const Pricing = () => {
         Pricing
       </motion.h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-0">
         {services.map((service, index) => (
           <motion.div
             key={service.id}
@@ -304,8 +304,35 @@ const Pricing = () => {
       </div>
 
       {selectedService && (
-        <div className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center">
-          <div className="bg-white border border-orange-500 rounded-xl p-8 w-96 text-center">
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-80 flex justify-center items-center z-50"
+          onClick={() => {
+            setSelectedService(null);
+            setLink("");
+            setQuantity("");
+            setConfirmation(false);
+            setMessage("");
+          }}
+        >
+          <motion.div
+            onClick={(e) => e.stopPropagation()} 
+            className="bg-white border border-orange-500 rounded-xl p-8 w-96 max-w-[90vw] text-center relative z-50"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+          >
+            <button
+              onClick={() => {
+                setSelectedService(null);
+                setLink("");
+                setQuantity("");
+                setConfirmation(false);
+                setMessage("");
+              }}
+              className="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl font-bold leading-none"
+            >
+              ×
+            </button>
             <h2 className="text-2xl font-bold text-orange-500 mb-4">
               {selectedService.name}
             </h2>
@@ -349,7 +376,7 @@ const Pricing = () => {
                 Cancel
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
