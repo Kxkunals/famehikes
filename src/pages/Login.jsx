@@ -74,7 +74,13 @@ const Login = () => {
 
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-            {error}
+            <div className="font-semibold mb-1">⚠️ Error:</div>
+            <div>{error}</div>
+            {error.includes("unauthorized-domain") && (
+              <div className="mt-3 p-2 bg-orange-50 border border-orange-200 rounded text-orange-800 text-xs">
+                <strong>Quick Fix:</strong> Go to Firebase Console → Authentication → Settings → Authorized domains → Add "{window.location.hostname}"
+              </div>
+            )}
           </div>
         )}
 
