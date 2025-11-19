@@ -19,6 +19,20 @@ export default function Navbar() {
     }
   };
 
+  const handleProtectedNavigation = (path) => {
+    if (currentUser) {
+      navigate(path);
+    } else {
+      navigate("/login", {
+        state: {
+          from: path,
+          message: "Please sign in to view pricing and place orders.",
+        },
+      });
+    }
+    setOpen(false);
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#fafafa]/95 backdrop-blur-sm">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-4">
@@ -35,7 +49,13 @@ export default function Navbar() {
         <nav className="hidden md:flex items-center gap-6 text-sm">
           <Link to="/" className="hover:text-orange-500 transition text-[#FFB6A3]">Home</Link>
           <Link to="/services" className="hover:text-orange-500 transition text-[#FFB6A3]">Services</Link>
-          <Link to="/pricing" className="hover:text-orange-500 transition text-[#FFB6A3]">Pricing</Link>
+          <button
+            type="button"
+            onClick={() => handleProtectedNavigation("/pricing")}
+            className="hover:text-orange-500 transition text-[#FFB6A3]"
+          >
+            Pricing
+          </button>
           <Link to="/about" className="hover:text-orange-500 transition text-[#FFB6A3]">About</Link>
           <Link to="/contact" className="hover:text-orange-500 transition text-[#FFB6A3]">Contact</Link>
           <div className="flex items-center gap-3 ml-6">
@@ -77,7 +97,13 @@ export default function Navbar() {
             </div>
           )}
           
-          <Link to="/pricing" className="ml-4 inline-block px-4 py-2 rounded-full gold-btn text-sm font-semibold">Buy Now</Link>
+          <button
+            type="button"
+            onClick={() => handleProtectedNavigation("/pricing")}
+            className="ml-4 inline-block px-4 py-2 rounded-full gold-btn text-sm font-semibold"
+          >
+            Buy Now
+          </button>
         </nav>
 
         <button className="md:hidden text-xl text-black" onClick={() => setOpen(o => !o)}>
@@ -90,7 +116,13 @@ export default function Navbar() {
           <div className="glass-card p-4 flex flex-col space-y-3">
             <Link to="/" onClick={() => setOpen(false)} className="text-black">Home</Link>
             <Link to="/services" onClick={() => setOpen(false)} className="text-black">Services</Link>
-            <Link to="/pricing" onClick={() => setOpen(false)} className="text-black">Pricing</Link>
+            <button
+              type="button"
+              onClick={() => handleProtectedNavigation("/pricing")}
+              className="text-left text-black"
+            >
+              Pricing
+            </button>
             <Link to="/about" onClick={() => setOpen(false)} className="text-black">About</Link>
             <Link to="/contact" onClick={() => setOpen(false)} className="text-black">Contact</Link>
             {currentUser ? (
@@ -124,7 +156,13 @@ export default function Navbar() {
                 <Link to="/signup" onClick={() => setOpen(false)} className="text-black">Signup</Link>
               </>
             )}
-            <Link to="/pricing" onClick={() => setOpen(false)} className="mt-2 text-center gold-btn py-2 rounded-full font-semibold">Buy Now</Link>
+            <button
+              type="button"
+              onClick={() => handleProtectedNavigation("/pricing")}
+              className="mt-2 text-center gold-btn py-2 rounded-full font-semibold"
+            >
+              Buy Now
+            </button>
           </div>
         </div>
       )}
