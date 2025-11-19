@@ -2,6 +2,8 @@ import express from "express";
 import crypto from "crypto";
 import axios from "axios";
 import dotenv from "dotenv";
+import { URLSearchParams } from "url";
+import { notifyDeveloper } from "../utils/notifier.js";
 
 dotenv.config();
 const router = express.Router();
@@ -16,7 +18,8 @@ router.post("/payment/verify", async (req, res) => {
       link,
       quantity,
       serviceId,
-      serviceName
+      serviceName,
+      amount
     } = req.body;
 
     // Validate required fields
@@ -27,10 +30,13 @@ router.post("/payment/verify", async (req, res) => {
       });
     }
 
-    if (!link || !quantity || !serviceId) {
+    const trimmedLink = typeof link === "string" ? link.trim() : "";
+    const normalizedQuantity = Number(quantity);
+
+    if (!trimmedLink || !Number.isFinite(normalizedQuantity) || normalizedQuantity <= 0 || !serviceId) {
       return res.status(400).json({
         success: false,
-        message: "Missing order details (link, quantity, serviceId)"
+        message: "Missing or invalid order details (link, quantity, serviceId)"
       });
     }
 
@@ -62,6 +68,16 @@ router.post("/payment/verify", async (req, res) => {
 
     console.log("✅ Payment signature verified successfully");
 
+    const summary = {
+      paymentId: razorpay_payment_id,
+      razorpayOrderId: razorpay_order_id,
+      link: trimmedLink,
+      quantity: normalizedQuantity,
+      serviceId,
+      serviceName: serviceName || "Unknown",
+      amount: amount ? Number(amount) : null,
+    };
+
     // Only deliver service if payment is verified
     try {
       // Call SMM Panel API to deliver the service
@@ -70,6 +86,10 @@ router.post("/payment/verify", async (req, res) => {
 
       if (!smmPanelApiUrl || !smmPanelApiKey) {
         console.warn("⚠️ SMM Panel API credentials not configured. Skipping service delivery.");
+        await notifyDeveloper("SERVICE_DELIVERY_SKIPPED", {
+          ...summary,
+          reason: "Missing SMM_PANEL_API credentials",
+        });
         // Still return success since payment is verified
         return res.status(200).json({
           success: true,
@@ -80,18 +100,17 @@ router.post("/payment/verify", async (req, res) => {
       }
 
       // Prepare SMM Panel API request
-      const smmPanelPayload = {
-        key: smmPanelApiKey,
-        action: "add",
-        service: serviceId,
-        link: link,
-        quantity: quantity
-      };
+      const smmPanelPayload = new URLSearchParams();
+      smmPanelPayload.append("key", smmPanelApiKey);
+      smmPanelPayload.append("action", "add");
+      smmPanelPayload.append("service", serviceId);
+      smmPanelPayload.append("link", trimmedLink);
+      smmPanelPayload.append("quantity", normalizedQuantity.toString());
 
       console.log("📤 Calling SMM Panel API to deliver service...");
       const smmResponse = await axios.post(smmPanelApiUrl, smmPanelPayload, {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/x-www-form-urlencoded"
         },
         timeout: 10000 // 10 second timeout
       });
@@ -100,16 +119,27 @@ router.post("/payment/verify", async (req, res) => {
 
       // Check if SMM panel accepted the order
       if (smmResponse.data && (smmResponse.data.order || smmResponse.data.status === "success" || smmResponse.data.error === false)) {
+        const smmOrderId = smmResponse.data.order || smmResponse.data.order_id || null;
+        await notifyDeveloper("SERVICE_DELIVERED", {
+          ...summary,
+          smmOrderId,
+          smmResponse: smmResponse.data
+        });
         return res.status(200).json({
           success: true,
           message: "Payment verified and service delivered successfully ✅",
           paymentId: razorpay_payment_id,
           orderId: razorpay_order_id,
-          smmOrderId: smmResponse.data.order || smmResponse.data.order_id || null
+          smmOrderId
         });
       } else {
         // Payment verified but service delivery failed
         console.error("❌ SMM Panel API returned error:", smmResponse.data);
+        await notifyDeveloper("SERVICE_DELIVERY_FAILED", {
+          ...summary,
+          smmResponse: smmResponse.data || null,
+          reason: "SMM panel rejected request"
+        });
         return res.status(200).json({
           success: true,
           message: "Payment verified ✅ but service delivery failed. Please contact support.",
@@ -122,6 +152,10 @@ router.post("/payment/verify", async (req, res) => {
     } catch (smmError) {
       // Payment is verified but SMM API call failed
       console.error("❌ Error calling SMM Panel API:", smmError.message);
+      await notifyDeveloper("SERVICE_DELIVERY_FAILED", {
+        ...summary,
+        reason: smmError.message || "Unknown error",
+      });
       return res.status(200).json({
         success: true,
         message: "Payment verified ✅ but service delivery failed. Please contact support with Payment ID.",
