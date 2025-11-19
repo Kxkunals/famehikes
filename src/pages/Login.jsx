@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import { FaGoogle } from "react-icons/fa";
@@ -12,6 +12,9 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectPath = location.state?.from || "/";
+  const redirectMessage = location.state?.message;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,7 +24,7 @@ const Login = () => {
     try {
       const result = await login(email, password);
       if (result.success) {
-        navigate("/");
+        navigate(redirectPath, { replace: true });
       } else {
         const friendlyError = getFirebaseErrorMessage(null, result.error);
         setError(friendlyError);
@@ -41,7 +44,7 @@ const Login = () => {
     try {
       const result = await loginWithGoogle();
       if (result.success) {
-        navigate("/");
+        navigate(redirectPath, { replace: true });
       } else {
         // Log the error for debugging
         console.error("Google login error:", result.error);
@@ -72,11 +75,17 @@ const Login = () => {
           <p className="text-gray-600">Welcome back to FameHikes</p>
         </div>
 
+        {redirectMessage && (
+          <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg text-orange-800 text-sm font-semibold">
+            {redirectMessage}
+          </div>
+        )}
+
         {error && (
           <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
             <div className="font-semibold mb-1">⚠️ Error:</div>
             <div>{error}</div>
-            {error.includes("unauthorized-domain") && (
+            {error?.includes("unauthorized-domain") && (
               <div className="mt-3 p-2 bg-orange-50 border border-orange-200 rounded text-orange-800 text-xs">
                 <strong>Quick Fix:</strong> Go to Firebase Console → Authentication → Settings → Authorized domains → Add "{typeof window !== 'undefined' ? window.location.hostname : 'your-domain.com'}"
               </div>
