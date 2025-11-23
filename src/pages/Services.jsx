@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaYoutube, FaInstagram } from "react-icons/fa";
 import axios from "axios";
 import { saveTransaction } from "../utils/transactionStorage";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://famehikes-backend.onrender.com";
 
 const Services = () => {
   const [selectedService, setSelectedService] = useState(null);
@@ -10,8 +12,55 @@ const Services = () => {
   const [quantity, setQuantity] = useState("");
   const [confirmation, setConfirmation] = useState(false);
   const [message, setMessage] = useState("");
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const services = [
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/services`);
+      if (response.data.success && response.data.services) {
+        // Transform backend services to frontend format
+        const transformedServices = response.data.services.map(service => {
+          // Determine icon based on category or service name
+          const isYouTube = service.category?.toLowerCase().includes("youtube") || 
+                          service.name?.toLowerCase().includes("youtube");
+          const isInstagram = service.category?.toLowerCase().includes("instagram") || 
+                            service.name?.toLowerCase().includes("instagram");
+          
+          const icon = isYouTube ? (
+            <FaYoutube className="text-red-500 text-4xl mb-4" />
+          ) : isInstagram ? (
+            <FaInstagram className="text-pink-500 text-4xl mb-4" />
+          ) : (
+            <FaYoutube className="text-red-500 text-4xl mb-4" />
+          );
+
+          return {
+            id: service.id || service.serviceId,
+            title: service.name,
+            description: service.description || `${service.name} service`,
+            icon: icon,
+            price: service.price,
+            serviceId: service.serviceId,
+            category: service.category,
+          };
+        });
+        setServices(transformedServices);
+      }
+    } catch (error) {
+      console.error("Error fetching services:", error);
+      // Fallback to default services if backend fails
+      setServices(getDefaultServices());
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getDefaultServices = () => [
     {
       title: "YouTube Subscribers",
       description: "Boost your channel's growth with genuine subscribers.",
@@ -174,6 +223,16 @@ const Services = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <section className="py-24 bg-[#fafafa] text-black" id="services">
+        <div className="container mx-auto text-center px-6">
+          <div className="text-2xl font-semibold text-orange-500">Loading services...</div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="py-24 bg-[#fafafa] text-black" id="services">
       <div className="container mx-auto text-center px-6">
@@ -186,7 +245,10 @@ const Services = () => {
           Our Services
         </motion.h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {services.length === 0 ? (
+          <div className="text-xl text-gray-600">No services available at the moment.</div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
             <motion.div
               key={index}
@@ -205,7 +267,8 @@ const Services = () => {
               </div>
             </motion.div>
           ))}
-        </div>
+          </div>
+        )}
 
         {/* Order Modal */}
         {selectedService && (

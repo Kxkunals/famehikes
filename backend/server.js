@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import orderRoutes from "./api/orders.js";
 import paymentRoutes from "./api/payment.js";
+import servicesRoutes from "./api/services.js";
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -9,7 +10,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["https://famehikes.in", "https://www.famehikes.in"],
+    origin: ["https://famehikes.in", "https://www.famehikes.in", "http://localhost:5173", "http://localhost:3000"],
     methods: ["GET", "POST", "OPTIONS"],
     allowedHeaders: ["Content-Type"],
     credentials: true,
@@ -20,6 +21,7 @@ app.use(express.json());
 
 app.use("/api", orderRoutes);
 app.use("/api", paymentRoutes);
+app.use("/api/services", servicesRoutes);
 
 app.get("/", (req, res) => {
   res.send("FameHikes backend is running ✅");

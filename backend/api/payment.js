@@ -120,6 +120,28 @@ router.post("/payment/verify", async (req, res) => {
       // Check if SMM panel accepted the order
       if (smmResponse.data && (smmResponse.data.order || smmResponse.data.status === "success" || smmResponse.data.error === false)) {
         const smmOrderId = smmResponse.data.order || smmResponse.data.order_id || null;
+        
+        // Save transaction to admin backend
+        try {
+          const adminBackendUrl = process.env.ADMIN_BACKEND_URL || "http://localhost:5001";
+          await axios.post(`${adminBackendUrl}/api/transactions`, {
+            paymentId: razorpay_payment_id,
+            razorpayOrderId: razorpay_order_id,
+            smmOrderId,
+            link: trimmedLink,
+            quantity: normalizedQuantity,
+            serviceId,
+            serviceName: serviceName || "Unknown",
+            amount: amount ? Number(amount) : null,
+            status: "success",
+            timestamp: new Date().toISOString()
+          }, { timeout: 5000 }).catch(err => {
+            console.warn("⚠️ Failed to save transaction to admin backend:", err.message);
+          });
+        } catch (err) {
+          console.warn("⚠️ Admin backend not available:", err.message);
+        }
+        
         await notifyDeveloper("SERVICE_DELIVERED", {
           ...summary,
           smmOrderId,
@@ -135,6 +157,28 @@ router.post("/payment/verify", async (req, res) => {
       } else {
         // Payment verified but service delivery failed
         console.error("❌ SMM Panel API returned error:", smmResponse.data);
+        
+        // Save failed transaction to admin backend
+        try {
+          const adminBackendUrl = process.env.ADMIN_BACKEND_URL || "http://localhost:5001";
+          await axios.post(`${adminBackendUrl}/api/transactions`, {
+            paymentId: razorpay_payment_id,
+            razorpayOrderId: razorpay_order_id,
+            link: trimmedLink,
+            quantity: normalizedQuantity,
+            serviceId,
+            serviceName: serviceName || "Unknown",
+            amount: amount ? Number(amount) : null,
+            status: "failed",
+            reason: "SMM panel rejected request",
+            timestamp: new Date().toISOString()
+          }, { timeout: 5000 }).catch(err => {
+            console.warn("⚠️ Failed to save transaction to admin backend:", err.message);
+          });
+        } catch (err) {
+          console.warn("⚠️ Admin backend not available:", err.message);
+        }
+        
         await notifyDeveloper("SERVICE_DELIVERY_FAILED", {
           ...summary,
           smmResponse: smmResponse.data || null,
@@ -152,6 +196,28 @@ router.post("/payment/verify", async (req, res) => {
     } catch (smmError) {
       // Payment is verified but SMM API call failed
       console.error("❌ Error calling SMM Panel API:", smmError.message);
+      
+      // Save failed transaction to admin backend
+      try {
+        const adminBackendUrl = process.env.ADMIN_BACKEND_URL || "http://localhost:5001";
+        await axios.post(`${adminBackendUrl}/api/transactions`, {
+          paymentId: razorpay_payment_id,
+          razorpayOrderId: razorpay_order_id,
+          link: trimmedLink,
+          quantity: normalizedQuantity,
+          serviceId,
+          serviceName: serviceName || "Unknown",
+          amount: amount ? Number(amount) : null,
+          status: "failed",
+          reason: smmError.message || "Unknown error",
+          timestamp: new Date().toISOString()
+        }, { timeout: 5000 }).catch(err => {
+          console.warn("⚠️ Failed to save transaction to admin backend:", err.message);
+        });
+      } catch (err) {
+        console.warn("⚠️ Admin backend not available:", err.message);
+      }
+      
       await notifyDeveloper("SERVICE_DELIVERY_FAILED", {
         ...summary,
         reason: smmError.message || "Unknown error",

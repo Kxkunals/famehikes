@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaInstagram, FaYoutube, FaChartLine, FaRocket, FaStar, FaUsers } from "react-icons/fa";
 import axios from "axios";
 import { saveTransaction } from "../utils/transactionStorage";
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "https://famehikes-backend.onrender.com";
 
 const Pricing = () => {
   const [selectedService, setSelectedService] = useState(null);
@@ -10,13 +12,40 @@ const Pricing = () => {
   const [quantity, setQuantity] = useState("");
   const [confirmation, setConfirmation] = useState(false);
   const [message, setMessage] = useState("");
+  const [services, setServices] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const services = [
-    { id: 1, name: "Instagram Followers", price: 100, serviceId: 2010 },
-    { id: 2, name: "Instagram Likes", price: 80, serviceId: 2009 },
-    { id: 3, name: "YouTube Views", price: 150, serviceId: 3001 },
-    { id: 4, name: "YouTube Likes", price: 120, serviceId: 3002 },
-  ];
+  useEffect(() => {
+    fetchServices();
+  }, []);
+
+  const fetchServices = async () => {
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/services`);
+      if (response.data.success && response.data.services) {
+        // Transform backend services to frontend format
+        const transformedServices = response.data.services.map((service, index) => ({
+          id: service.id || index + 1,
+          name: service.name,
+          price: service.price,
+          serviceId: service.serviceId,
+          category: service.category,
+        }));
+        setServices(transformedServices);
+      }
+    } catch (error) {
+      console.error("Error fetching services:", error);
+      // Fallback to default services
+      setServices([
+        { id: 1, name: "Instagram Followers", price: 100, serviceId: 2010 },
+        { id: 2, name: "Instagram Likes", price: 80, serviceId: 2009 },
+        { id: 3, name: "YouTube Views", price: 150, serviceId: 3001 },
+        { id: 4, name: "YouTube Likes", price: 120, serviceId: 3002 },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleOrder = async () => {
     if (!selectedService || !quantity || !link) {
@@ -257,7 +286,12 @@ const Pricing = () => {
         Pricing
       </motion.h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-0">
+      {loading ? (
+        <div className="text-center text-xl text-orange-500">Loading services...</div>
+      ) : services.length === 0 ? (
+        <div className="text-center text-xl text-gray-600">No services available at the moment.</div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-0">
         {services.map((service, index) => (
           <motion.div
             key={service.id}
@@ -301,7 +335,8 @@ const Pricing = () => {
             </button>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
 
       {selectedService && (
         <div 
